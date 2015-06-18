@@ -1,3 +1,4 @@
+
 #ifndef IRISANALYSIS_H
 #define IRISANALYSIS_H
 
@@ -28,7 +29,6 @@ private:
     cv::Mat irisImage;
 
     double imageQualityScore = 0.0;
-
 };
 
 #endif // IRISANALYSIS_H

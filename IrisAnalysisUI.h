@@ -1,3 +1,4 @@
+
 #ifndef IRISANALYSISUI_H
 #define IRISANALYSISUI_H
 
@@ -30,6 +31,8 @@ private slots:
     void on_scale1Btn_clicked();
     void on_analysis0Btn_clicked();
     void on_analysis1Btn_clicked();
+
+    void on_compareBtn_clicked();
 
 private:
     Ui::IrisAnalysisUI *ui;

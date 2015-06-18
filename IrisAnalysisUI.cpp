@@ -1,3 +1,4 @@
+
 #include "IrisAnalysisUI.h"
 #include "ui_IrisAnalysisUI.h"
 #include "IrisAnalysis.h"
@@ -103,4 +104,9 @@ void IrisAnalysisUI::on_analysis1Btn_clicked()
 void IrisAnalysisUI::on_analysis0Btn_clicked()
 {
     irisAnalysis->eyeAnalysis();
+}
+
+void IrisAnalysisUI::on_compareBtn_clicked()
+{
+
 }

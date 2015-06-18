@@ -29,26 +29,41 @@ LIBS += -L$$OPENCV_PATH/osx/lib \
 INCLUDEPATH += $$OPENCV_PATH/osx/include
 #######
 
-# Analysis, MasekAlg, and IRISLib
+### Analysis, MasekAlg, and IrisLib
 EYEDENTISCANBUILD = /Users/hasbegun/devel/eyedentiscan/proj
 CONFIG(debug) {
-#    LIBS += -L$$EYEDENTISCANBUILD/build/EyedentiScanLib-Desktop_Qt_5_4_2_clang_64bit-Debug -lEyedentiScanLib
+    LIBS += -L$$EYEDENTISCANBUILD/build/IrisAnalysisLib-Desktop_Qt_5_4_2_clang_64bit-Debug -lIrisAnalysisLib
     LIBS += -L$$EYEDENTISCANBUILD/build/IrisLib2-Desktop_Qt_5_4_2_clang_64bit-Debug -lIrisLib2
 } else {
-#    LIBS += -L$$EYEDENTISCANBUILD/build/EyedentiScanLib-Desktop_Qt_5_4_2_clang_64bit-Release -lEyedentiScanLib
+    LIBS += -L$$EYEDENTISCANBUILD/build/IrisAnalysisLib-Desktop_Qt_5_4_2_clang_64bit-Release -lIrisAnalysisLib
     LIBS += -L$$EYEDENTISCANBUILD/build/IrisLib2-Desktop_Qt_5_4_2_clang_64bit-Release -lIrisLib2
 }
 
-#INCLUDEPATH += $$EYEDENTISCANBUILD/EyedentiScanLib
+INCLUDEPATH += $$EYEDENTISCANBUILD/IrisAnalysisLib
 INCLUDEPATH += $$EYEDENTISCANBUILD/IrisLib2
+#########
 
 SOURCES += main.cpp\
     IrisAnalysisUI.cpp \
-    IrisAnalysis.cpp
+    IrisAnalysis.cpp \
+    ModeDialog.cpp \
+    InputDialog.cpp \
+    CVImageSource.cpp \
+    ImageWidget.cpp \
+    IrisCompare.cpp
 
 HEADERS  += \
     IrisAnalysisUI.h \
-    IrisAnalysis.h
+    IrisAnalysis.h \
+    ModeDialog.h \
+    InputDialog.h \
+    CVImageSource.h \
+    ImageSource.h \
+    ImageWidget.h \
+    IrisCompare.h
 
-FORMS    += MainWindow.ui \
-    IrisAnalysisUI.ui
+FORMS    += \
+    IrisAnalysisUI.ui \
+    ModeDialog.ui \
+    InputDialog.ui \
+    IrisCompare.ui
