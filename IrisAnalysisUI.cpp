@@ -2,13 +2,12 @@
 #include "IrisAnalysisUI.h"
 #include "ui_IrisAnalysisUI.h"
 #include "IrisAnalysis.h"
+#include "IrisCompare.h"
 
 #include <QDebug>
 #include <QMessageBox>
 
-IrisAnalysisUI::IrisAnalysisUI(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::IrisAnalysisUI)
+IrisAnalysisUI::IrisAnalysisUI(QWidget *parent) : QMainWindow(parent), ui(new Ui::IrisAnalysisUI)
 {
     ui->setupUi(this);
 }
@@ -21,11 +20,21 @@ IrisAnalysisUI::~IrisAnalysisUI()
 
 void IrisAnalysisUI::on_loadImageBtn_clicked()
 {
+      //File selection dlg
+//    QString fileSelected = QFileDialog::getOpenFileName(this, tr("Open image file"),  "/Users/hasbegun/devel/iris", tr("Jpeg (*.jpg);;Png (*.png)"));
+//    //convert qstring to char
+//    QByteArray byteArray = fileSelected.toUtf8();
+//    testIrisFile = byteArray.constData();
+
+    /////// debug /////////////
+    // L
     //testIrisFile = "/Users/hasbegun/devel/eyedentiscan/proj/data/CASIA-Iris-Interval/001/L/S1001L01.jpg";
     //testIrisFile = "/Users/hasbegun/devel/eyedentiscan/proj/data/CASIA-Iris-Interval/002/L/S1002L01.jpg";
-
-    testIrisFile = "/Users/hasbegun/devel/eyedentiscan/proj/data/CASIA-Iris-Thousand/000/L/S5000L01.jpg";
-//    testIrisFile = "/Users/hasbegun/devel/eyedentiscan/proj/data/CASIA-Iris-Thousand/001/L/S5001L01.jpg";
+    //testIrisFile = "/Users/hasbegun/devel/eyedentiscan/proj/data/CASIA-Iris-Thousand/000/L/S5000L01.jpg";
+    testIrisFile = "/Users/hasbegun/devel/eyedentiscan/proj/data/CASIA-Iris-Thousand/001/L/S5001L01.jpg";
+    // R
+    //testIrisFile = "/Users/hasbegun/devel/eyedentiscan/proj/data/CASIA-Iris-Thousand/006/R/S5006R01.jpg";
+    ///////////////////////////
 
     qDebug() << testIrisFile;
 
@@ -47,9 +56,6 @@ void IrisAnalysisUI::on_loadImageBtn_clicked()
         ui->analysis0Btn->setEnabled(true);
         ui->analysis1Btn->setEnabled(true);
 
-        //convert qstring to char
-        //QByteArray byteArray = fileName.toUtf8();
-        //const char* filename = byteArray.constData();
 
         //convert qstring to std::string
         //QString qs;
@@ -70,7 +76,6 @@ void IrisAnalysisUI::scaleImage(double factor)
     ui->imageView->setScaledContents(true);
 }
 
-
 void IrisAnalysisUI::on_zoomInBtn_clicked()
 {
     scaleImage(1.25);
@@ -79,7 +84,6 @@ void IrisAnalysisUI::on_zoomInBtn_clicked()
 void IrisAnalysisUI::on_zoomOutBtn_clicked()
 {
     scaleImage(0.8);
-
 }
 
 void IrisAnalysisUI::on_scale1Btn_clicked()
@@ -96,10 +100,7 @@ void IrisAnalysisUI::on_analysis1Btn_clicked()
     ui->qualityValue->setText(QString::number(irisAnalysis->getImageQuality()));
 
     irisAnalysis->irisCheck();
-
 }
-
-
 
 void IrisAnalysisUI::on_analysis0Btn_clicked()
 {
@@ -108,5 +109,6 @@ void IrisAnalysisUI::on_analysis0Btn_clicked()
 
 void IrisAnalysisUI::on_compareBtn_clicked()
 {
-
+    IrisCompare compare;
+    compare.show();
 }

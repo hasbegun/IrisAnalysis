@@ -101,81 +101,6 @@ void IrisAnalysis::checkQuality()
 
 void IrisAnalysis::irisCheck()
 {
-//    ImageUtility *imgUtil = NULL;
-
-//    // still image
-//    // set args for sill eye image
-//    float nScale = 2.0;
-//    const int speed_m = 1;// Default 1
-//    int alpha = 25; // Alpha value for contrast threshold
-
-//    // Setup the parameters to avoid that noise caused by reflections and
-//    // eyelashes covers the pupil
-//    double ratio4Circle = .90;
-//    // Initialize for Closing and Opening process
-//    int closeItr = 2;//dilate->erode
-//    int openItr = 3;//erode->dilate
-//    double norm = 256.0;
-
-//    //IRIS INPUTS
-//    double scaling = 0.4;// Default
-//    double lowThres = 0.11;// Default
-//    double highThres = 0.19;// Default
-
-//    const int rPupilMax = (int) (42*nScale);// Maximum radius of pupil's circle
-//    const int rIrisMax = (int) (82*nScale);// Maximum radius of iris' circle
-
-//    //fine the pupil circle using contours
-//    int pupilCircle[6]={0};
-
-//    // convert from mat to ipl  https://gist.github.com/QuarkSpark/3404507
-//    IplImage *img=NULL;
-//    IplImage *imgDisplay=NULL;
-//    IplImage ipl_img = irisImage;
-//    //CvMat cvmat = irisImage;
-//    img = &ipl_img; // iris image in iplimage
-//    imgDisplay = &ipl_img;
-
-//    FindPupilCircleNew::doDetect(img, rPupilMax, ratio4Circle, closeItr, openItr, speed_m, alpha, norm, nScale, pupilCircle);
-//    cvCircle(imgDisplay, cvPoint(pupilCircle[0], pupilCircle[1]), pupilCircle[2], CV_RGB(255,255,255), 1, 8);
-//    ImageUtility::showImage("Pupil Circle on the result", imgDisplay);
-
-//    ////////////////////////////////////////////////////////////
-//    CvPoint xyPupil;
-//    xyPupil.x = pupilCircle[0];
-//    xyPupil.y = pupilCircle[1];
-//    int rPupil = pupilCircle[2];
-//    //IplImage* setImg = NULL;
-
-//    //ROI for detecting the iris circle
-//    ImageUtility::SETVALUE setVal = imgUtil->setImage(img, xyPupil, rPupil, rIrisMax, rIrisMax);	//82 is the best for video images, previous 80
-//    img = imgUtil->getROIImage(img, setVal.rect.x, setVal.rect.width, setVal.rect.y, setVal.rect.height);
-//    imgDisplay = imgUtil->getROIImage(img, setVal.rect.x, setVal.rect.width, setVal.rect.y, setVal.rect.height);
-
-//    ImageUtility::showImage("Iris ROI", img);
-
-//    //////////////////////////////////////////////////////////////////
-//    int centerAdjust=(int)(rIrisMax/4); //(rIrisMax/5); //for video dataset
-
-//    //find the iris circle using Hough Transform
-//    int irisCircle[3]={0};
-
-//    FindIrisCircle::doDetect(img, rPupil, rIrisMax, scaling, lowThres, highThres, irisCircle);
-
-//    cvCircle(imgDisplay, cvPoint(irisCircle[0], irisCircle[1]), irisCircle[2], CV_RGB(255,255,255), 1, 8);
-//    ImageUtility::showImage("Iris Circle on the result", imgDisplay);
-//    ImageUtility::drawCross(imgDisplay, irisCircle[0], irisCircle[1], 10, 10, CV_RGB(255,0,0) );
-
-//    ///////////////////////////////////////////////////////////////////
-//    CvPoint xyIris;
-//    xyIris.x = irisCircle[0];
-//    xyIris.y = irisCircle[1];
-//    int rIris = irisCircle[2];
-//    xyIris = FindIrisCircle::getOriginPoints(xyPupil, xyIris, setVal.p, centerAdjust);
-//    cvReleaseImage(&setImg);
-
-
-////////////////////////////////////////////////////////////////////////
     IplImage *imgOrigin;
 
     const char *fn = irisFileName.c_str();
@@ -261,11 +186,12 @@ void IrisAnalysis::irisCheck()
 
 
     // debug
-    for (int i=0; i<3; i++) {
-        std::cout << "x:[" << i << "] " << x[i] << std::endl;
-        std::cout << "top ty:[" << i << "] " << ty[i] << std::endl;
-        std::cout << "bot by:[" << i << "] " << by[i] << std::endl;
-    }
+//    for (int i=0; i<3; i++) {
+//        std::cout << "x:[" << i << "] " << x[i] << std::endl;
+//        std::cout << "top ty:[" << i << "] " << ty[i] << std::endl;
+//        std::cout << "bot by:[" << i << "] " << by[i] << std::endl;
+//    }
+    ///////////////////////////
 
     ImageUtility::showEyeLidPoints("Eye Lid 3 Points", eyeImg, x, ty, by);
 
@@ -277,14 +203,16 @@ void IrisAnalysis::irisCheck()
     eyelid->calcCurvePoints(eyeImg, x, by, destBY);
 
     // debug: eyelid calculation verification
-    int *X1 = new int[size];
-    for(int i=0; i<size; i++) {
-        std::cout << "dest TY [" << i << "]: " << destTY[i] << "|" <<
-                     "dest BY [" << i << "]: " << destBY[i] << std::endl;
-        X1[i] = x[0] + i;
-    }
-    ImageUtility::drawEyeLidLines(eyeImg, X1, destTY, destBY, size);
-    delete[] X1; // need to delete.
+//    int *X1 = new int[size];
+//    for(int i=0; i<size; i++) {
+//        std::cout << "dest TY [" << i << "]: " << destTY[i] << "|" <<
+//                     "dest BY [" << i << "]: " << destBY[i] << std::endl;
+//        X1[i] = x[0] + i;
+//    }
+    //////////////////////////////
+
+//    ImageUtility::drawEyeLidLines(eyeImg, X1, destTY, destBY, size);
+//    delete[] X1; // need to delete.
     //// end of debug
 
     // find interested area only.
@@ -340,7 +268,26 @@ void IrisAnalysis::irisCheck()
     free(imgWithNoise->data);
     free(imgWithNoise);
     ImageUtility::showImage("Nomalized Noise Array", imgUtil->convertImageToIpl(&noiseArray));
+    ImageUtility::showImage("Nomalized Polar Array", imgUtil->convertFilterToIpl(&polarArray));
 
+    // encoding
+    const int encodeScales = 1;
+    const int mult = 1; //not applicable if using encodeScales = 1
+    int minWaveLength = 18;
+    double sigmaOnf = 0.55;//0.5
+    //float coefThresRate = 0.0f;// for FX: 0.25 and 0.10
+
+    float magLowerThresRate = 0.02f;
+    float magUpperThresRate = 0.85f;
+
+    Encode::newEncode(&polarArray, &noiseArray, encodeScales, (const int)minWaveLength,
+        mult, (const double)sigmaOnf, template1, mask1, width, height,
+        magLowerThresRate, magUpperThresRate);
+
+    free(polarArray.data);
+    free(noiseArray.data);
+    delete imgUtil;
+    //////////////
 }
 
 void IrisAnalysis::eyeAnalysis()
