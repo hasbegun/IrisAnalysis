@@ -1,5 +1,6 @@
 
 #include <QFileDialog>
+#include <QDebug>
 
 #include "IrisCompare.h"
 
@@ -8,8 +9,10 @@
 #include "Iris/MatchAlg.h"
 #include "Iris/EyeRegionExtraction.h"
 
-#include "Analysis.h"
-#include "GetROC.h"
+#include "IrisAnalysis/Analysis.h"
+#include "IrisAnalysis/GetROC.h"
+
+#include "IrisAnalysisUI.h"
 
 #if _MSC_VER
     #ifndef sprintf
@@ -281,7 +284,7 @@ void IrisCompare::alignExractEyeImage(IplImage* currentLeftPairImg, IplImage* cu
 
 	float nScale = 1.0;		
 	const int speed_m = 1;// Default 1
-	const int alpha = 20; // Alpha value for contrast threshold
+    const int alpha = 20; // Alpha value for contrast threshold
 	// Setup the parameters to avoid that noise caused by reflections and 
     // eyelashes covers the pupil
     double ratio4Circle = 1.0;
@@ -373,7 +376,7 @@ void IrisCompare::checkQuality()
 	{
         try {
 			IplImage* img = NULL;
-			img = cvLoadImage(myFileName,0);
+            img = cvLoadImage(myFileName, 0);
 
 			// If it is NULL, release the image, and stop processing
 			if(img == NULL)
@@ -447,15 +450,12 @@ void IrisCompare::goMatch()
 										gDataType1, pDataType1);
 		if(leftHD != -1 && leftHD < thresholdHD)
 		{
-			 
 			txtLeftResult->setText("Match");
 			txtLeftResult->setStyleSheet("QLabel {background-color: #33CC00}"); 
         } else {
-			
 			txtLeftResult->setText("No Match");
 			txtLeftResult->setStyleSheet("QLabel {background-color: #FF3300}"); 
-		}			
-	
+        }
 	}
 	if(rightFileName1 != NULL && rightFileName2 != NULL)
 	{
@@ -470,7 +470,7 @@ void IrisCompare::goMatch()
 			txtRightResult->setText("No Match");
 			txtRightResult->setStyleSheet("QLabel {background-color: #FF3300}"); 
 		}
-	}	
+    }
 }
 
 //BUTTON: Opens the image selected in dialog
@@ -490,7 +490,7 @@ void IrisCompare::openLeftEye1()
 	
 	if(leftFileName1==NULL)
 	{
-		cout << "Failed to load the target image file" << endl;
+        cout << "Failed to load the target image file (left 1 seems it is empty.) " << endl;
 		return;
 	}
 
@@ -512,7 +512,7 @@ void IrisCompare::openLeftEye2()
 	leftFileName2 = drawEyeImage(this->imgLeftWidget2, "Open query image", dir);
 	if(leftFileName2==NULL)
 	{
-		cout << "Failed to load the query image file" << endl;
+        cout << "Failed to load the query image file (left 2 seems it is empty.) " << leftFileName2 << endl;
 		return;
 	}
 
@@ -534,7 +534,7 @@ void IrisCompare::openRightEye1()
 	rightFileName1 = drawEyeImage(this->imgRightWidget1, "Open target image", dir);
 	if(rightFileName1==NULL)
 	{
-		cout << "Failed to load the target image file" << endl;
+        cout << "Failed to load the target image file (right 1 seems it is empty.) " << endl;
 		return;
 	}
 	txtRightDataType1->setText(txtDataType(gDataType2));
@@ -547,7 +547,7 @@ void IrisCompare::openRightEye2()
 	pDataType2 = getDataType();
 	if(pDataType2 == 0)
 	{
-		cout << "Failed to load the data type" << endl;
+        cout << "Failed to load the data type" << endl;
 		return;
 	}
 
@@ -556,7 +556,7 @@ void IrisCompare::openRightEye2()
 	rightFileName2 = drawEyeImage(this->imgRightWidget2, "Open query image", dir);
 	if(leftFileName2==NULL)
 	{
-		cout << "Failed to load the query image file" << endl;
+        cout << "Failed to load the query image file (right 2 seems it is empty.)" << endl;
 		return;
 	}
 	txtRightDataType2->setText(txtDataType(pDataType2));
@@ -606,7 +606,7 @@ IrisCompare::MATCHDATA IrisCompare::getEyeImage(const char* title, const char* d
         matchData.imgMatch = cvLoadImage(myFileName, 0);
 		if(matchData.imgMatch == NULL)
 		{
-			cout << "Faliled to load the image file" << endl;
+            cout << "Faliled to load the image file" << endl;
 		}			
 		return matchData;		
 	}
@@ -639,7 +639,35 @@ void IrisCompare::generateReports()
 
 char *IrisCompare::openFileName(const char *path, const char *title, const char *fileType)
 {
-    QString imageFileName = QFileDialog::getOpenFileName(this, tr("Open image file"),  QDir::currentPath(), tr("Jpeg (*.jpg);;Png (*.png)"));
+//    QString imageFileName = QFileDialog::getOpenFileName(this, tr("Open image file"),
+//                                                         QDir::currentPath(),
+//                                                         tr("Jpeg (*.jpg);;Png (*.png);;BMP(*.bmp"));
+    QString fileName = NULL;
+    //cout << "Before QFileDialog" << endl;
+    if(path == NULL)
+    {
+        // Native Dialogs cause issue on Mac OS X - force Qt built-in dialog
+        fileName = QFileDialog::getOpenFileName(this,
+            tr(title), QDir::currentPath(), tr(fileType),
+            0, QFileDialog::DontUseNativeDialog);
+    } else {
+        fileName = QFileDialog::getOpenFileName(this,
+            tr(title), path, tr(fileType),
+            0, QFileDialog::DontUseNativeDialog);
+    }
+    cout << "Loaded: " << fileName.toStdString() << endl;
+
+    if (!fileName.isEmpty())
+    {
+        QByteArray enc =fileName.toUtf8(); //or toLocal8Bit or whatever
+        //then allocate enough memory:
+        char* myFileName = new char[enc.size()+1];
+        //and copy it
+        strcpy(myFileName, enc.data());
+        return myFileName;
+    }
+    return NULL;
+
 }
 
 void IrisCompare::clearWidget()

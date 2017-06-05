@@ -8,11 +8,11 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    IrisAnalysisUI ui;
-    ui.show();
+//    IrisAnalysisUI ui;
+//    ui.show();
 
-//    IrisCompare compare;
-//    compare.show();
+    IrisCompare compare;
+    compare.show();
 
     return a.exec();
 }

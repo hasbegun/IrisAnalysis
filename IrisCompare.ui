@@ -17,7 +17,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Toto IRIS</string>
+   <string>Iris Compare</string>
   </property>
   <widget class="QWidget" name="m_centralwidget">
    <widget class="QTabWidget" name="tabWidget">
@@ -365,7 +365,6 @@
      <string>Analysis</string>
     </property>
     <addaction name="actionReports"/>
-    <addaction name="actionOpen_Iris_Analysis"/>
    </widget>
    <addaction name="menuCascade"/>
    <addaction name="menuFiles"/>
@@ -441,6 +440,11 @@
    </property>
    <property name="toolTip">
     <string>Open iris analysis window</string>
+   </property>
+  </action>
+  <action name="actionStep_By_Step_Anaysis">
+   <property name="text">
+    <string>Step By Step Anaysis</string>
    </property>
   </action>
  </widget>

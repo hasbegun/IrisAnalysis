@@ -18,29 +18,30 @@ QMAKE_CXXFLAG += -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.8
 #######
 
 ### OpenCV link
-OPENCV_PATH = /usr/local/opencv/2.4.11
-LIBS += -L$$OPENCV_PATH/osx/lib \
+OPENCV_PATH = /usr/local/opt/opencv
+LIBS += -L$$OPENCV_PATH/lib \
     -lopencv_core \
     -lopencv_imgproc \
     -lopencv_highgui \
     -lopencv_objdetect \
     -lopencv_legacy
 
-INCLUDEPATH += $$OPENCV_PATH/osx/include
+INCLUDEPATH += $$OPENCV_PATH/include
 #######
 
 ### Analysis, MasekAlg, and IrisLib
-EYEDENTISCANBUILD = /Users/hasbegun/devel/eyedentiscan/proj
+EYEDENTISCANBUILD = /Users/hasbegun/devel/biometric/BiometricLib/build
 CONFIG(debug) {
-    LIBS += -L$$EYEDENTISCANBUILD/build/IrisAnalysisLib-Desktop_Qt_5_4_2_clang_64bit-Debug -lIrisAnalysisLib
-    LIBS += -L$$EYEDENTISCANBUILD/build/IrisLib2-Desktop_Qt_5_4_2_clang_64bit-Debug -lIrisLib2
+    LIBS += -L$$EYEDENTISCANBUILD/lib -lIrisAnalysis
+    LIBS += -L$$EYEDENTISCANBUILD/lib -lIris
 } else {
-    LIBS += -L$$EYEDENTISCANBUILD/build/IrisAnalysisLib-Desktop_Qt_5_4_2_clang_64bit-Release -lIrisAnalysisLib
-    LIBS += -L$$EYEDENTISCANBUILD/build/IrisLib2-Desktop_Qt_5_4_2_clang_64bit-Release -lIrisLib2
+    LIBS += -L$$EYEDENTISCANBUILD/lib -lIrisAnalysis
+    LIBS += -L$$EYEDENTISCANBUILD/lib -lIris
 }
 
-INCLUDEPATH += $$EYEDENTISCANBUILD/IrisAnalysisLib
-INCLUDEPATH += $$EYEDENTISCANBUILD/IrisLib2
+###INCLUDEPATH += $$EYEDENTISCANBUILD/include/IrisAnalysis
+###INCLUDEPATH += $$EYEDENTISCANBUILD/include/Iris
+INCLUDEPATH += $$EYEDENTISCANBUILD/include
 #########
 
 SOURCES += main.cpp\
@@ -52,7 +53,7 @@ SOURCES += main.cpp\
     ImageWidget.cpp \
     IrisCompare.cpp
 
-HEADERS  += \
+HEADERS += \
     IrisAnalysisUI.h \
     IrisAnalysis.h \
     ModeDialog.h \
@@ -62,7 +63,7 @@ HEADERS  += \
     ImageWidget.h \
     IrisCompare.h
 
-FORMS    += \
+FORMS += \
     IrisAnalysisUI.ui \
     ModeDialog.ui \
     InputDialog.ui \

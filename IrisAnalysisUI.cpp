@@ -2,7 +2,6 @@
 #include "IrisAnalysisUI.h"
 #include "ui_IrisAnalysisUI.h"
 #include "IrisAnalysis.h"
-#include "IrisCompare.h"
 
 #include <QDebug>
 #include <QMessageBox>
@@ -15,7 +14,7 @@ IrisAnalysisUI::IrisAnalysisUI(QWidget *parent) : QMainWindow(parent), ui(new Ui
 IrisAnalysisUI::~IrisAnalysisUI()
 {
     delete ui;
-    delete irisAnalysis;
+    if(irisAnalysis) delete irisAnalysis;
 }
 
 void IrisAnalysisUI::on_loadImageBtn_clicked()
@@ -107,8 +106,3 @@ void IrisAnalysisUI::on_analysis0Btn_clicked()
     irisAnalysis->eyeAnalysis();
 }
 
-void IrisAnalysisUI::on_compareBtn_clicked()
-{
-    IrisCompare compare;
-    compare.show();
-}

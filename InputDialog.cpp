@@ -6,9 +6,9 @@
 
 #include <iostream>
 
-#include "Analysis.h"
-#include "GetROC.h"
-#include "Utility.h"
+#include "IrisAnalysis/Analysis.h"
+#include "IrisAnalysis/GetROC.h"
+#include "IrisAnalysis/Utility.h"
 
 using namespace std;
 

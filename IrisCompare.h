@@ -13,7 +13,6 @@
 #include "CVImageSource.h"
 #include "Iris/ImageUtility.h"
 
-
 class EyeDetection;
 
 /**
@@ -122,9 +121,9 @@ public slots:
     * - Reduced ROC scores.
     */
     void generateReports();
-	
+
 private:
-	EyeDetection* eyeDetection;
+    EyeDetection *eyeDetection;
 
 	/// Images loaded and shown in imageWidget
 	char* leftFileName1;
@@ -253,6 +252,5 @@ private:
 	 * @return string
 	 */
 	const char* txtDataType(int type);
-
 };
 #endif

@@ -9,6 +9,7 @@
 #include "Iris/FindHighLights.h"
 #include "Iris/MatchAlg.h"
 #include "Iris/Normalization.h"
+#include "Iris/Encode.h"
 
 #include <iostream>
 #include <string>
@@ -227,7 +228,7 @@ void IrisAnalysis::irisCheck()
     const int min=3, max=250;
 
     //FindHighLights::removeHighLights2(noiseImage, min, max);//5, 230
-    FindHighLights::removeHighLights2(noiseImage,min, max);
+    FindHighLights::removeHighLights2(noiseImage, min, max);
     ImageUtility::showImage("Find Eyelashes and reflections", imgUtil->convertImageToIpl(noiseImage));
 
     cvReleaseImage(&grayImg);
@@ -256,6 +257,7 @@ void IrisAnalysis::irisCheck()
                 imgWithNoise->data[x + y * imgWithNoise->hsize[1]] = (double)noiseImage->data[x + y * noiseImage->hsize[1]];
         }
     }
+
     free(noiseImage->data);
     free(noiseImage);
 
@@ -264,29 +266,40 @@ void IrisAnalysis::irisCheck()
                                 (const int)radialRes, (const int)angularRes,
                                 &polarArray, &noiseArray);
     // after this polarArray and noseArray will have somevalues.
+    std::cout << "POALR ARRAY / NOISE ARRAY" << std::endl;
+    for(int i=0; i<polarArray.hsize[0]; i++)
+    {
+        for(int j=0; j<polarArray.hsize[1]; j++)
+        {
+            std::cout << "PA[" << i << ", " << j << "] = " << polarArray.data[i+j] << " " <<
+                         "NA[" << i << ", " << j << "] = " << noiseArray.data[i+j] << std::endl;
+        }
+    }
+    ImageUtility::showImage("imgWithNoise anfter nomalize", imgUtil->convertFilterToIpl(imgWithNoise));
+    ImageUtility::showImage("Nomalized Polar Array", imgUtil->convertFilterToIpl(&polarArray));
+    ImageUtility::showImage("Nomalized Noise Array", imgUtil->convertImageToIpl(&noiseArray));
 
     free(imgWithNoise->data);
     free(imgWithNoise);
-    ImageUtility::showImage("Nomalized Noise Array", imgUtil->convertImageToIpl(&noiseArray));
-    ImageUtility::showImage("Nomalized Polar Array", imgUtil->convertFilterToIpl(&polarArray));
 
     // encoding
-    const int encodeScales = 1;
-    const int mult = 1; //not applicable if using encodeScales = 1
-    int minWaveLength = 18;
-    double sigmaOnf = 0.55;//0.5
-    //float coefThresRate = 0.0f;// for FX: 0.25 and 0.10
+//    const int encodeScales = 1;
+//    const int mult = 1; //not applicable if using encodeScales = 1
+//    int minWaveLength = 18;
+//    double sigmaOnf = 0.55;//0.5
+//    //float coefThresRate = 0.0f;// for FX: 0.25 and 0.10
 
-    float magLowerThresRate = 0.02f;
-    float magUpperThresRate = 0.85f;
+//    float magLowerThresRate = 0.02f;
+//    float magUpperThresRate = 0.85f;
+//    const char *template1 = "/Users/hasbegun/Desktop/testTemplate.mat";
 
-    Encode::newEncode(&polarArray, &noiseArray, encodeScales, (const int)minWaveLength,
-        mult, (const double)sigmaOnf, template1, mask1, width, height,
-        magLowerThresRate, magUpperThresRate);
+//    Encode::newEncode(&polarArray, &noiseArray, encodeScales, (const int)minWaveLength,
+//        mult, (const double)sigmaOnf, template1, mask1, width, height,
+//        magLowerThresRate, magUpperThresRate);
 
-    free(polarArray.data);
-    free(noiseArray.data);
-    delete imgUtil;
+//    free(polarArray.data);
+//    free(noiseArray.data);
+//    delete imgUtil;
     //////////////
 }
 
