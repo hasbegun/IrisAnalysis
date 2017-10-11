@@ -38,14 +38,15 @@ CONFIG(debug) {
     LIBS += -L$$EYEDENTISCANBUILD/lib -lIrisLib
 }
 
-SOURCES += main.cpp\
+SOURCES += \
+    main.cpp\
     IrisAnalysisUI.cpp \
     IrisAnalysis.cpp \
     ModeDialog.cpp \
     InputDialog.cpp \
     CVImageSource.cpp \
     ImageWidget.cpp \
-    IrisCompare.cpp
+    IrisCompare.cpp \
 
 HEADERS += \
     IrisAnalysisUI.h \
