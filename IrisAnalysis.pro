@@ -18,7 +18,7 @@ QMAKE_CXXFLAG += -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.8
 #######
 
 ### Link OpenCV & Iris
-OPENCV_PATH = /usr/local/opencv/2.4
+OPENCV_PATH = /usr/local/opencv/2.4.13.6
 EYEDENTISCANBUILD = /usr/local/eyedentiscan
 LIBS += -L$$OPENCV_PATH/lib \
     -lopencv_core \
