@@ -59,20 +59,19 @@ void IrisAnalysis::checkQuality()
     if(irisImage.empty()){
         std::cout << "Iris image file is not loaded. No task to do!";
     } else {
-        try
-        {
+        try {
             // method 1. not so efficient, but works
-//            IplImage* img = NULL;
-//            const char *fn = irisFileName.c_str();
-//            img = cvLoadImage(fn, 0);
+            IplImage* img = NULL;
+            const char *fn = irisFileName.c_str();
+            img = cvLoadImage(fn, 0);
             //////////////////////////////////////////////////
 
             // method 2. no disk io. faster.
-            IplImage *img=NULL;
-            // convert from mat to ipl  https://gist.github.com/QuarkSpark/3404507
-            IplImage ipl_img = irisImage;
-            //CvMat cvmat = irisImage;
-            img = &ipl_img;
+//            IplImage *img=NULL;
+//            // convert from mat to ipl  https://gist.github.com/QuarkSpark/3404507
+//            IplImage ipl_img = irisImage;
+//            //CvMat cvmat = irisImage;
+//            img = &ipl_img;
             ///////////////////////////////////////////////////
 
             //ImageUtility::CVMatToIplImage(&irisImage, img);
@@ -89,7 +88,7 @@ void IrisAnalysis::checkQuality()
             ImageUtility::showImage("Image loaded on memory", img);
 
             imageQualityScore = ImageQuality::doProcess(img, 0); //0:Sobel
-            cout << "Quality score: " << imageQualityScore << endl;            
+            cout << "Quality score: " << imageQualityScore << endl;
 
             //cvReleaseImage(&img);
         }
@@ -314,4 +313,3 @@ void IrisAnalysis::eyeAnalysis()
     MatchAlg::oneEyeAnalysis(fn, 1);
     delete[] fn;
 }
-

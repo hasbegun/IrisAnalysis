@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -12,30 +12,32 @@ TARGET = IrisAnalysis
 TEMPLATE = app
 
 ### compiler setting
-CONFIG += c++11
-QMAKE_CFLAG += -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.8
-QMAKE_CXXFLAG += -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.8
+CONFIG += c++17
+QMAKE_CFLAG += -std=c++17 -stdlib=libc++
+QMAKE_CXXFLAG += -std=c++17 -stdlib=libc++
 #######
 
 ### Link OpenCV & Iris
-OPENCV_PATH = /usr/local/opencv/2.4.13.6
-EYEDENTISCANBUILD = /usr/local/eyedentiscan
+OPENCV_PATH = /usr/local/opt/opencv@3
+BIOLIB_PATH = /usr/local/alphablocks
 LIBS += -L$$OPENCV_PATH/lib \
     -lopencv_core \
     -lopencv_imgproc \
     -lopencv_highgui \
     -lopencv_objdetect \
-    -lopencv_legacy
+    -lopencv_imgcodecs \
+    -lopencv_videoio
 
 INCLUDEPATH += $$OPENCV_PATH/include
-INCLUDEPATH += $$EYEDENTISCANBUILD/include
+INCLUDEPATH += $$BIOLIB_PATH/include
+
 ### Analysis, MasekAlg, and IrisLib
 CONFIG(debug) {
-    LIBS += -L$$EYEDENTISCANBUILD/lib -lIrisAnalysisLib
-    LIBS += -L$$EYEDENTISCANBUILD/lib -lIrisLib
+    LIBS += -L$$BIOLIB_PATH/lib -lIrisAnalysisLib
+    LIBS += -L$$BIOLIB_PATH/lib -lIrisLib
 } else {
-    LIBS += -L$$EYEDENTISCANBUILD/lib -lIrisAnalysisLib
-    LIBS += -L$$EYEDENTISCANBUILD/lib -lIrisLib
+    LIBS += -L$$BIOLIB_PATH/lib -lIrisAnalysisLib
+    LIBS += -L$$BIOLIB_PATH/lib -lIrisLib
 }
 
 SOURCES += \
