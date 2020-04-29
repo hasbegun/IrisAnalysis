@@ -39,10 +39,9 @@ IrisCompare::IrisCompare( QWidget* parent /*= 0*/, Qt::WindowFlags flags /*= 0*/
 	setupUi(this);
 }
 
-IrisCompare::~IrisCompare()
-{
+IrisCompare::~IrisCompare() {
 	//Memory error here ==>
-	if(eyeDetection != NULL)			
+	if(eyeDetection != NULL)
 		delete eyeDetection;
 
 	delete[] leftFileName1;
@@ -51,44 +50,41 @@ IrisCompare::~IrisCompare()
 	delete[] rightFileName2;
 }
 
-
-void IrisCompare::SelectCascade()
-{ 
+void IrisCompare::SelectCascade() {
     char* myCascadeFileName = openFileName("../Cascade", "Open cascade XML file", "XML Files (*.xml)");
-	if(myCascadeFileName != NULL)
-	{    
+	if(myCascadeFileName != NULL) {
 		// Release previously loaded cascade
-		if (eyeDetection != NULL)		
+		if (eyeDetection != NULL)
 			delete eyeDetection;
-		    
+
 		// Try to load the cascade
         try {
 			 eyeDetection = new EyeDetection(myCascadeFileName);
         } catch (const char* msg) {
 			cout << "Error: Failed to load the cascade " << msg << endl;
-		}		
+		}
     }
 }
 
-// MENU: Selects best quality image from eye images detected 
+// MENU: Selects best quality image from eye images detected
 // in video file
-void IrisCompare::selectBestEye(IplImage* currentImg, int index, int &bestIndex, IplImage*& bestImg, double& bestScore)
-{
+void IrisCompare::selectBestEye(IplImage* currentImg,
+		int index, int &bestIndex,
+		IplImage*& bestImg, double& bestScore) {
 	// Convert image to the gray scale
 	IplImage* grayImg = NULL;
 	grayImg = ImageUtility::convertToGray(currentImg);
-	
+
 	// Calculate the quality score
 	double score = ImageQuality::doProcess(grayImg, 0);//0: SOBEL
 	cout << "Quality score: " << score << endl;
-  
+
 	// Select the best image quality score
-	if (score > bestScore)
-	{
+	if (score > bestScore) {
 		// Release previous - if any
-		if (bestImg != NULL)		
+		if (bestImg != NULL)
 			cvReleaseImage(&bestImg);
-		
+
 		// Copy the best image to bestImg
 		bestImg = cvCloneImage(currentImg);
 		bestScore = score;
@@ -100,23 +96,24 @@ void IrisCompare::selectBestEye(IplImage* currentImg, int index, int &bestIndex,
 
 // MENU: Selects best quality image from eye images detected in video file
 // With the pupil position alignment
-void IrisCompare::selectBestEyePairImage(IplImage* currentImg, IplImage* currentPairImg, int index, int& bestIndex, IplImage*& bestImg, double& bestScore)
-{
+void IrisCompare::selectBestEyePairImage(
+		IplImage* currentImg, IplImage* currentPairImg,
+		int index, int& bestIndex,
+		IplImage*& bestImg, double& bestScore) {
 	// Convert image to the gray scale
 	IplImage* grayImg = NULL;
 	grayImg = ImageUtility::convertToGray(currentImg);
-	
+
 	// Calculate the quality score
 	double score = ImageQuality::doProcess(grayImg, 0);//0: SOBEL
 	cout << "Quality score: " << score << endl;
-  
+
 	// Select the best image quality score
-	if (score > bestScore)
-	{
+	if (score > bestScore) {
 		// Release previous - if any
-		if (bestImg != NULL)		
+		if (bestImg != NULL)
 			cvReleaseImage(&bestImg);
-		
+
 		// Copy the pair image to bestImg that selected by the left or right quality score
 		bestImg = cvCloneImage(currentPairImg);
 		bestScore = score;
@@ -126,8 +123,7 @@ void IrisCompare::selectBestEyePairImage(IplImage* currentImg, IplImage* current
 }
 
 //MENU: Open Face Video file and detect the eye regions
-void IrisCompare::OpenAVIFile()
-{
+void IrisCompare::OpenAVIFile() {
 	loadVideoFile();
 }
 
@@ -138,8 +134,7 @@ void IrisCompare::loadVideoFile()
 	char* videoFileName = openFileName(path, "Open AVI file","AVI Files (*.avi)");
 
 	//Try to load the video files
-	if(videoFileName != NULL)
-	{
+	if(videoFileName != NULL) {
         try {
 			// Clean up
 			clearWidget();
@@ -149,16 +144,15 @@ void IrisCompare::loadVideoFile()
             gDataType1 = NIR_FACE_VIDEO;
             gDataType2 = NIR_FACE_VIDEO;
 
-			detectEyeRegion(videoFileName);			
+			detectEyeRegion(videoFileName);
         } catch (const char* msg) {
 		  cout << "Error: Failed to load the video file " << msg << endl;
 		}
-	}	
+	}
 }
 
 //FUNCTION: Detects the eye region / extracts and saves it
-void IrisCompare::detectEyeRegion(char* fileName)
-{	
+void IrisCompare::detectEyeRegion(char* fileName) {
 	// Video scales. 4: 2048x2048(MBGC Data), 2: 1024x1024, 1: 512x512
 	const int scales = 4;
 	// Eye region rectangl adjustment (pixel unit)
@@ -177,7 +171,7 @@ void IrisCompare::detectEyeRegion(char* fileName)
 	int indexLeft = -1;
 	int indexRight = -1;
 	double prevLeftScore = -1;
-    double prevRightScore = -1;	
+    double prevRightScore = -1;
 
     try {
 		// Check whether or not the cascade was loaded
@@ -188,37 +182,33 @@ void IrisCompare::detectEyeRegion(char* fileName)
 			// Load Video file to Qt
 			imgSrc = new CVVideoSource(fileName);
 			cout << "Number of frames: " << imgSrc->getNumberOfImages() << endl;
- 
+
 			int i = 1; //Number of detected images
 			int j = 1; //Frame number that contains the detected eye
             while (imgSrc->hasNextImage()) {
-				img = imgSrc->getNextImage();//\todo Confirm this one				
-
-                if (img == NULL)
-                {
+				img = imgSrc->getNextImage();//\todo Confirm this one
+                if (img == NULL) {
                     cerr << "There is no more next image" << endl;
                 }
-                if(img != NULL)
-				{ 					
+                if(img != NULL) {
 				   EyeDetection::RESULT* res = NULL;
-				   res = eyeDetection->detect(img, scales, val, w, h);	           
+				   res = eyeDetection->detect(img, scales, val, w, h);
 				   // Draw the current frame
 				   imgWidget->setImage(img); // Don't forget this
 
-				   if (res == NULL)
-				   {
+				   if (res == NULL) {
 					 cerr << "No eyes were detected" << endl;
                    } else {
-						// Draw rectangles for each detected eye region  
+						// Draw rectangles for each detected eye region
 						imgWidget->addRectange(res->leftRect);
                         imgWidget->addRectange(res->rightRect);
                         cout << "Index: " << i << endl;
-						
+
                         //select the best-eye image without the pupil position alignment
                         selectBestEye(res->leftImg, i, indexLeft, imgForLeftEye, prevLeftScore);
                         selectBestEye(res->rightImg, i, indexRight, imgForRightEye, prevRightScore);
 
-						//select the best-eye image with the pupil position alignment						
+						//select the best-eye image with the pupil position alignment
                         //selectBestEyePairImage(res->leftImg, res->bothImg, i, indexLeft, imgForLeftEye, prevLeftScore);
                         //selectBestEyePairImage(res->rightImg, res->bothImg, i, indexRight, imgForRightEye, prevRightScore);
 
@@ -228,25 +218,25 @@ void IrisCompare::detectEyeRegion(char* fileName)
 						ImageUtility::SaveImageOptions(res->leftImg, fileName, j, "L", i, imgSrc->getNumberOfImages());
 						ImageUtility::SaveImageOptions(res->rightImg, fileName, j, "R", i, imgSrc->getNumberOfImages());
 						#endif
-												
-						i++;						
+
+						i++;
 
 						cvReleaseImage(&res->leftImg);
 						cvReleaseImage(&res->rightImg);
                         cvReleaseImage(&res->bothImg);
-						
+
 					}
-					imgWidget->repaint();				    
+					imgWidget->repaint();
 				}
                 j++;
-				
+
 			}//while
             imgWidget->reset();
             imgWidget->repaint();
 
             // Change current tab
             tabWidget->setCurrentIndex(1);
-						
+
 			cout << "Selected Index for Left: " << indexLeft << "    Selected Index for Right: " << indexRight << endl;
 
             drawBestImage(fileName, indexLeft, indexRight, imgForLeftEye, imgForRightEye);
@@ -260,7 +250,7 @@ void IrisCompare::detectEyeRegion(char* fileName)
             alignExractEyeImage(imgForLeftEye, imgForRightEye, NIR_FACE_VIDEO, "bmp", extractedLeftImg, extractedRightImg);
             cvReleaseImage(&imgForLeftEye);
             cvReleaseImage(&imgForRightEye);
-			
+
 			// Draw best-eye image
             drawBestImage(fileName, indexLeft, indexRight, extractedLeftImg, extractedRightImg);//with pupil alignment
             cvReleaseImage(&extractedLeftImg);
@@ -269,10 +259,10 @@ void IrisCompare::detectEyeRegion(char* fileName)
 		}
     } catch (const char* msg) {
       cout << "Error: " << msg << endl;
-    }		
-    
+    }
+
 	if(imgSrc != NULL)
-		delete imgSrc; 
+		delete imgSrc;
 }
 
 //Align the left and right eye position using pupil information and then extract the eye region
@@ -282,10 +272,10 @@ void IrisCompare::alignExractEyeImage(IplImage* currentLeftPairImg, IplImage* cu
 	IplImage* rImg1 = NULL;
 	IplImage* lImg1 = NULL;
 
-	float nScale = 1.0;		
+	float nScale = 1.0;
 	const int speed_m = 1;// Default 1
     const int alpha = 20; // Alpha value for contrast threshold
-	// Setup the parameters to avoid that noise caused by reflections and 
+	// Setup the parameters to avoid that noise caused by reflections and
     // eyelashes covers the pupil
     double ratio4Circle = 1.0;
     // Initialize for Closing and Opening process
@@ -309,14 +299,14 @@ void IrisCompare::alignExractEyeImage(IplImage* currentLeftPairImg, IplImage* cu
 		openItr = 3;
 	}
 
-	int rPupilMax = (int) (42*nScale); 
+	int rPupilMax = (int) (42*nScale);
 	int rIrisMax = (int) (82*nScale);
-	
+
 	//Extract the left eye image-> best left or right image can be from different frame
 	EyeRegionExtraction::doExtract(currentLeftPairImg, rPupilMax, rIrisMax, ratio4Circle, closeItr, openItr, speed_m, alpha, norm, nScale, imageFormat, lImg, rImg1);
 	//Extract the right eye image
 	EyeRegionExtraction::doExtract(currentRightPairImg, rPupilMax, rIrisMax,  ratio4Circle, closeItr, openItr, speed_m, alpha, norm, nScale, imageFormat, lImg1, rImg);
-	
+
 	cvReleaseImage(&lImg1);
 	cvReleaseImage(&rImg1);
 }
@@ -325,7 +315,7 @@ void IrisCompare::alignExractEyeImage(IplImage* currentLeftPairImg, IplImage* cu
 void IrisCompare::drawBestImage(char* fileName, int indexLeft, int indexRight, IplImage* imgLeft, IplImage* imgRight)
 {
 	if(imgLeft != NULL)
-	{ 	
+	{
         Ui_IrisCompare::imgLeftWidget1->setImage(imgLeft, true);
         Ui_IrisCompare::imgLeftWidget1->repaint();
 		if (leftFileName1 != NULL)
@@ -341,7 +331,7 @@ void IrisCompare::drawBestImage(char* fileName, int indexLeft, int indexRight, I
 	}
 
     if(imgRight != NULL)
-	{        
+	{
         Ui_IrisCompare::imgRightWidget1->setImage(imgRight, true);
         Ui_IrisCompare::imgRightWidget1->repaint();
 		if (rightFileName1 != NULL)
@@ -354,17 +344,17 @@ void IrisCompare::drawBestImage(char* fileName, int indexLeft, int indexRight, I
 		const char* temp = buffer;
 		// Save best right eye image
 		rightFileName1 = ImageUtility::SaveEyeImages(imgRight, fileName, temp, "bmp");
-	}	
+	}
 }
 
 //MENU:  \todo Future work
 void IrisCompare::OpenIrisAVIFile()
-{ 
+{
 }
 
 //MENU:  \todo Future work
 void IrisCompare::OpenCAM()
-{     
+{
 }
 
 //MENU: Image Quality Measurement using Sobel operator
@@ -406,20 +396,20 @@ void IrisCompare::StartMatch()
 	{
 		//Load the query image
 		openLeftEye2();
-		
+
 		if(leftFileName2 != NULL && pDataType1 != 0)
-		{				
+		{
 			double leftHD = 0.0;
 			leftHD = MatchAlg::mainMatchAlg((char*)leftFileName1, (char*)leftFileName2,
 										gDataType1, pDataType1);
 			if(leftHD != -1 && leftHD < thresholdHD)
 			{
 				txtLeftResult->setText("Match");
-				txtLeftResult->setStyleSheet("QLabel {background-color: #33CC00}"); 
+				txtLeftResult->setStyleSheet("QLabel {background-color: #33CC00}");
             } else {
 				txtLeftResult->setText("No Match");
-				txtLeftResult->setStyleSheet("QLabel {background-color: #FF3300}"); 
-			}		
+				txtLeftResult->setStyleSheet("QLabel {background-color: #FF3300}");
+			}
 		}
 	}
 }
@@ -430,66 +420,58 @@ void IrisCompare::goMatch()
 	// \todo Possible to optimize?
 	const double thresholdHD = 0.39;
 	double leftHD = 0.0;
-	double rightHD = 0.0;	
-	
-	if((leftFileName1==NULL && leftFileName2==NULL 
+	double rightHD = 0.0;
+
+	if((leftFileName1==NULL && leftFileName2==NULL
 		&& rightFileName1==NULL && rightFileName2==NULL)
 		|| (leftFileName1 != NULL && leftFileName2 == NULL)
 		|| (leftFileName1 == NULL && leftFileName2 != NULL)
 		|| (rightFileName1 != NULL && rightFileName2 == NULL)
-		|| (rightFileName1 == NULL && rightFileName2 != NULL))
-	{
+		|| (rightFileName1 == NULL && rightFileName2 != NULL)) {
 		cout << "Failed to load the target or query image file" << endl;
 		return;
 	}
 
-	if(leftFileName1 != NULL && leftFileName2 != NULL)
-	{
-		
-		leftHD = MatchAlg::mainMatchAlg((char*)leftFileName1, (char*)leftFileName2,
+	if(leftFileName1 != NULL && leftFileName2 != NULL) {
+		leftHD = MatchAlg::mainMatchAlg((char*)leftFileName1,
+										(char*)leftFileName2,
 										gDataType1, pDataType1);
-		if(leftHD != -1 && leftHD < thresholdHD)
-		{
+		if(leftHD != -1 && leftHD < thresholdHD) {
 			txtLeftResult->setText("Match");
-			txtLeftResult->setStyleSheet("QLabel {background-color: #33CC00}"); 
+			txtLeftResult->setStyleSheet("QLabel {background-color: #33CC00}");
         } else {
 			txtLeftResult->setText("No Match");
-			txtLeftResult->setStyleSheet("QLabel {background-color: #FF3300}"); 
+			txtLeftResult->setStyleSheet("QLabel {background-color: #FF3300}");
         }
 	}
-	if(rightFileName1 != NULL && rightFileName2 != NULL)
-	{
+	if(rightFileName1 != NULL && rightFileName2 != NULL) {
 		rightHD = MatchAlg::mainMatchAlg((char*)rightFileName1, (char*)rightFileName2,
 										gDataType2, pDataType2);
-		
-		if(rightHD != -1 && rightHD < thresholdHD)
-		{
+
+		if(rightHD != -1 && rightHD < thresholdHD) {
 			txtRightResult->setText("Match");
-			txtRightResult->setStyleSheet("QLabel {background-color: #33CC00}");                  
+			txtRightResult->setStyleSheet("QLabel {background-color: #33CC00}");
         } else {
 			txtRightResult->setText("No Match");
-			txtRightResult->setStyleSheet("QLabel {background-color: #FF3300}"); 
+			txtRightResult->setStyleSheet("QLabel {background-color: #FF3300}");
 		}
     }
 }
 
 //BUTTON: Opens the image selected in dialog
-void IrisCompare::openLeftEye1()
-{  
+void IrisCompare::openLeftEye1() {
 	gDataType1 = 0;
-	gDataType1 = getDataType();	
-	if(gDataType1 == 0)
-	{
+	gDataType1 = getDataType();
+	if(gDataType1 == 0) {
 		cout << "Failed to load the data type" << endl;
 		return;
 	}
 
-	leftFileName1 = NULL;  
+	leftFileName1 = NULL;
 	const char* dir = "../../../Samples/";
 	leftFileName1 = drawEyeImage(this->imgLeftWidget1, "Open target image", dir);
-	
-	if(leftFileName1==NULL)
-	{
+
+	if(leftFileName1==NULL) {
         cout << "Failed to load the target image file (left 1 seems it is empty.) " << endl;
 		return;
 	}
@@ -498,42 +480,36 @@ void IrisCompare::openLeftEye1()
 }
 
 // BUTTON: Opens the image selected in dialog
-void IrisCompare::openLeftEye2()
-{
+void IrisCompare::openLeftEye2() {
 	pDataType1 = 0;
 	pDataType1 = getDataType();
-	if(pDataType1 == 0)
-	{
+	if(pDataType1 == 0) {
 		cout << "Failed to load the data type" << endl;
 		return;
 	}
 	leftFileName2 = NULL;
 	const char* dir = "../../../Samples/";
 	leftFileName2 = drawEyeImage(this->imgLeftWidget2, "Open query image", dir);
-	if(leftFileName2==NULL)
-	{
+	if(leftFileName2==NULL) {
         cout << "Failed to load the query image file (left 2 seems it is empty.) " << leftFileName2 << endl;
 		return;
 	}
 
-	txtLeftDataType2->setText(txtDataType(pDataType1)); 
+	txtLeftDataType2->setText(txtDataType(pDataType1));
 }
 
 // BUTTON: Opens the image selected in dialog
-void IrisCompare::openRightEye1()
-{
+void IrisCompare::openRightEye1() {
 	gDataType2 = 0;
 	gDataType2 = getDataType();
-	if(gDataType2 == 0)
-	{
+	if(gDataType2 == 0) {
 		cout << "Failed to load the data type" << endl;
 		return;
 	}
 	rightFileName1 = NULL;
 	const char* dir = "../../../Samples/";
 	rightFileName1 = drawEyeImage(this->imgRightWidget1, "Open target image", dir);
-	if(rightFileName1==NULL)
-	{
+	if(rightFileName1==NULL) {
         cout << "Failed to load the target image file (right 1 seems it is empty.) " << endl;
 		return;
 	}
@@ -541,12 +517,10 @@ void IrisCompare::openRightEye1()
 }
 
 // BUTTON: Opens the image selected in dialog
-void IrisCompare::openRightEye2()
-{
+void IrisCompare::openRightEye2() {
 	pDataType2 = 0;
 	pDataType2 = getDataType();
-	if(pDataType2 == 0)
-	{
+	if(pDataType2 == 0) {
         cout << "Failed to load the data type" << endl;
 		return;
 	}
@@ -554,16 +528,14 @@ void IrisCompare::openRightEye2()
 	rightFileName2 = NULL;
 	const char* dir = "../../../Samples/";
 	rightFileName2 = drawEyeImage(this->imgRightWidget2, "Open query image", dir);
-	if(leftFileName2==NULL)
-	{
+	if(leftFileName2==NULL) {
         cout << "Failed to load the query image file (right 2 seems it is empty.)" << endl;
 		return;
 	}
 	txtRightDataType2->setText(txtDataType(pDataType2));
 }
 
-const char* IrisCompare::txtDataType(int type)
-{
+const char* IrisCompare::txtDataType(int type) {
 	const char* str ="Data Type here";
 	if(type==NIR_IRIS_STILL)
 		str = "Classical Still Image";
@@ -574,54 +546,47 @@ const char* IrisCompare::txtDataType(int type)
 }
 
 // Widget: Draws the opened image file
-char* IrisCompare::drawEyeImage(ImageWidget *imgWidget, const char* title, const char* dir)
-{
+char* IrisCompare::drawEyeImage(ImageWidget *imgWidget, const char* title, const char* dir) {
     IrisCompare::MATCHDATA matchData = getEyeImage(title, dir);
-	if(matchData.imgMatch != NULL && matchData.matchFileName != NULL)
-	{
+	if(matchData.imgMatch != NULL && matchData.matchFileName != NULL) {
 		IplImage* img = NULL;
 		img = matchData.imgMatch;
 		char* eyeFileName = matchData.matchFileName;
-		imgWidget->setImage(img);		
+		imgWidget->setImage(img);
 		imgWidget->repaint();
 		cvReleaseImage(&img);
-		return eyeFileName;		 
+		return eyeFileName;
 	}
 	return NULL;
 }
 
 // Dialog & Widget: Get the eye image
-IrisCompare::MATCHDATA IrisCompare::getEyeImage(const char* title, const char* dir)
-{
+IrisCompare::MATCHDATA IrisCompare::getEyeImage(const char* title, const char* dir) {
     IrisCompare::MATCHDATA matchData;
-	matchData.imgMatch = NULL;	
-	matchData.matchFileName = NULL;		
+	matchData.imgMatch = NULL;
+	matchData.matchFileName = NULL;
 	char* myFileName = openFileName(dir, title, "images (*.bmp *.tiff *.jpg *.pgm)");
 
-	if(myFileName != NULL)
-	{
+	if(myFileName != NULL) {
 		// Repaint dialog
 		this->repaint();
 		matchData.matchFileName = myFileName;
         matchData.imgMatch = cvLoadImage(myFileName, 0);
-		if(matchData.imgMatch == NULL)
-		{
+		if(matchData.imgMatch == NULL) {
             cout << "Faliled to load the image file" << endl;
-		}			
-		return matchData;		
+		}
+		return matchData;
 	}
 	return matchData;
 }
 
 // Dialog & Widget: Get the eye image
-int IrisCompare::getDataType()
-{
+int IrisCompare::getDataType() {
 	int mode = 0;
 	//select the finger mode
 	ModeDialog* dlg = new ModeDialog(this);
 	int ret = dlg->exec();
-	if (ret == QDialog::Accepted) 
-	{
+	if (ret == QDialog::Accepted) {
 		mode = dlg->getMode();
 	}
 	return mode;
@@ -630,22 +595,19 @@ int IrisCompare::getDataType()
 /**
 * Menu item: Generate all reports.
 */
-void IrisCompare::generateReports()
-{
+void IrisCompare::generateReports() {
    InputDialog* dlg = new InputDialog(this);
    dlg->exec();
    delete dlg;
 }
 
-char *IrisCompare::openFileName(const char *path, const char *title, const char *fileType)
-{
+char *IrisCompare::openFileName(const char *path, const char *title, const char *fileType) {
 //    QString imageFileName = QFileDialog::getOpenFileName(this, tr("Open image file"),
 //                                                         QDir::currentPath(),
 //                                                         tr("Jpeg (*.jpg);;Png (*.png);;BMP(*.bmp"));
     QString fileName = NULL;
     //cout << "Before QFileDialog" << endl;
-    if(path == NULL)
-    {
+    if(path == NULL) {
         // Native Dialogs cause issue on Mac OS X - force Qt built-in dialog
         fileName = QFileDialog::getOpenFileName(this,
             tr(title), QDir::currentPath(), tr(fileType),
@@ -657,8 +619,7 @@ char *IrisCompare::openFileName(const char *path, const char *title, const char 
     }
     cout << "Loaded: " << fileName.toStdString() << endl;
 
-    if (!fileName.isEmpty())
-    {
+    if (!fileName.isEmpty()) {
         QByteArray enc =fileName.toUtf8(); //or toLocal8Bit or whatever
         //then allocate enough memory:
         char* myFileName = new char[enc.size()+1];
@@ -671,8 +632,7 @@ char *IrisCompare::openFileName(const char *path, const char *title, const char 
 }
 
 //Widget: Clean up before new image widget starts
-void IrisCompare::clearWidget()
-{
+void IrisCompare::clearWidget() {
     leftFileName1 = NULL;
     rightFileName1 = NULL;
     leftFileName2 = NULL;
@@ -697,8 +657,7 @@ void IrisCompare::clearWidget()
 }
 
 //Enter the output name in commend
-char* IrisCompare::getOutputFName(int i, string currentPath, string type)
-{
+char* IrisCompare::getOutputFName(int i, string currentPath, string type) {
     std::string str;
     cout << i <<"Enter " << type <<": ";
     std::getline(cin, str);
@@ -722,8 +681,7 @@ char* IrisCompare::getOutputFName(int i, string currentPath, string type)
     return myFileName;
 }
 
-int IrisCompare::getString(std::string title)
-{
+int IrisCompare::getString(std::string title) {
     std::string str;
     int val = 0;
     cout << "Enter "<< title <<": ";
