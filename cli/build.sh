@@ -8,5 +8,5 @@ if [ "$1" = "clean" ]; then
 fi
 
 cd ${BLD_DIR}
-cmake ..
-make
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local/alphablocks ..
+make -j$(nproc) && sudo make install

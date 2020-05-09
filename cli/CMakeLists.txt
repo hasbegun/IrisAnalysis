@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1.0)
-project(IrisCompareCli)
+project(IrisCompare)
 
 # with out -std=c++11 or -std=c++17 cxxopts gets errors
 set(CMAKE_CXX_STANDARD 17)
@@ -53,3 +53,5 @@ target_link_libraries(${PROJECT_NAME}
     spdlog::spdlog_header_only
     ${LIBRARIES}
 )
+install (TARGETS ${PROJECT_NAME}
+         RUNTIME DESTINATION bin)
