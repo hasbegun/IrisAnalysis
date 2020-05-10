@@ -1,0 +1,38 @@
+config:
+    iris_img_data_path: {{ config.irisImgDataPath }}
+    default_iris_img_quality: {{ config.defaultIrisImgQuality }}
+    default_hamming_dist_threshold: {{ config.defaultHammingDistThreshold }}
+    exec_path: {{ config.execPath }}
+
+tests:
+{%- for test in tests %}
+{% set type = test.type %}
+{%- if type == "P" -%}
+    {{ test.case|indent(4, True) }}:
+        type: {{ type }}
+        dir: "{{ test.dir }}"
+        side: {{ test.side }}
+        base_img: {{ test.base_img }}
+        target_img: {{ test.target_img }}
+        expected_result: {{ test.expected_result }}
+{%- elif type == "N-A" -%}
+    {{ test.case|indent(4, True) }}:
+        type: {{ type }}
+        dir: "{{ test.dir }}"
+        base_side: {{ test.base_side }}
+        base_img: {{ test.base_img }}
+        target_side: {{ test.target_side }}
+        target_img: {{ test.target_img }}
+        expected_result: {{ test.expected_result }}
+{%- elif type == "N-B" -%}
+    {{ test.case|indent(4, True) }}:
+        type: {{ type }}
+        base_dir: "{{ test.base_dir }}"
+        base_side: {{ test.base_side }}
+        base_img: {{ test.base_img }}
+        target_dir: "{{ test.target_dir }}"
+        target_side: {{ test.target_side }}
+        target_img: {{ test.target_img }}
+        expected_result: {{ test.expected_result }}
+{%- endif -%}
+{% endfor %}

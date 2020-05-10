@@ -57,7 +57,7 @@ bool IrisCompareCli::isMatch() {
 void IrisCompareCli::setCascade(std::string cascadePath) {
   if (Utils::fileExist(cascadePath)) {
     cascade = cascadePath;
-    spdlog::info("Cascade {} is set.", cascade);
+    spdlog::debug("Cascade {} is set.", cascade);
   } else {
     spdlog::warn("Unable to set the cascade {}. Set it as default: haarcascade_eye.xml", cascade);
     cascade = "/usr/local/share/OpenCV/haarcascades/haarcascade_eye.xml";
@@ -73,16 +73,16 @@ double IrisCompareCli::checkQuality(cv::Mat& img) {
   // double score2 = 0.0;
   // IplImage targetImg = cvIplImage(baseIrisMat);
   // score1 = ImageQuality::doProcess(&targetImg, 0);  // 0: sobel
-  // spdlog::info("img score {}", score);
+  // spdlog::debug("img score {}", score);
 
   // targetImg = cvIplImage(targetIrisMat);
   // score2 = ImageQuality::doProcess(&targetImg, 0);  // 0: sobel
-  // spdlog::info("img score {}", score);
+  // spdlog::debug("img score {}", score);
 
   double score = 0.0;
   IplImage i = cvIplImage(img);
   score = ImageQuality::doProcess(&i, 0);  // 0: sobel
-  spdlog::info("The image quality score {}", score);
+  spdlog::debug("The image quality score {}", score);
 
   return score;
 }
@@ -91,7 +91,7 @@ double IrisCompareCli::checkQuality2(cv::Mat& img) {
   double score = 0.0;
   IplImage i = cvIplImage(img);
   score = ImageQuality::doProcess(&i, 0);  // 0: sobel
-  spdlog::info("The image quality score {}", score);
+  spdlog::debug("The image quality score {}", score);
 
   return score;
 }
@@ -122,7 +122,7 @@ bool IrisCompareCli::compare() {
       spdlog::error("The base image quality({}) is too low to perform analysis.", baseIrisQuality);
       return false;
     } else {
-      spdlog::info("The base iris image quality score {}", baseIrisQuality);
+      spdlog::debug("The base iris image quality score {}", baseIrisQuality);
     }
 
     double targetIrisQuality = checkQuality(targetIrisMat);
@@ -130,7 +130,7 @@ bool IrisCompareCli::compare() {
       spdlog::error("The target image quality({}) is too low to perform analysis.", baseIrisQuality);
       return false;
     } else {
-      spdlog::info("The base iris image quality score {}", targetIrisQuality);
+      spdlog::debug("The base iris image quality score {}", targetIrisQuality);
     }
   }
   // convert string to char*
@@ -148,17 +148,16 @@ bool IrisCompareCli::compare() {
   // std::vector<char> targetPath(targetIrisImgPath.c_str(), targetIrisImgPath.c_str()+targetIrisImgPath.size() + 1);
 
   double measureDiff = MatchAlg::mainMatchAlg(basePath, targetPath, gDataType, pDataType);
-  spdlog::info("measure {}", measureDiff);
+  spdlog::debug("measure {}", measureDiff);
 
   delete [] basePath;
   delete [] targetPath;
 
-  if (measureDiff < matchingThreshold) {
-    spdlog::info("Match: diff by {}", measureDiff);
-    match = true;
-  } else {
-    spdlog::info("No Match: diff by {}", measureDiff);
+  if (measureDiff > matchingThreshold) {
     match = false;
+  } else {
+    match =true;
   }
+  spdlog::debug("Match: diff by {}", measureDiff);
   return match;
 }

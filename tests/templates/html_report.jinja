@@ -1,0 +1,128 @@
+<html>
+<title>Test report</title>
+<style type="text/css">
+body {
+    background-color: #121212;
+    color: #bbbbbb;
+}
+.pass {
+    background-color: #10FF50;
+    color: black;
+}
+.fail {
+    background-color: #FF0000;
+    color: white;
+}
+.path {
+    color: #bbbbbb;
+}
+</style>
+
+<body>
+<div>Iris comparison tests</div><br>
+<table border=1>
+    <thead>
+    <tr>
+        <th align="center">Test Date</td>
+        <th align="center">Total</td>
+        <th align="center">TP</td>
+        <th align="center">TP Rate</td>
+        <th align="center">FP</td>
+        <th align="center">FP Rate</td>
+        <th align="center">FN</td>
+        <th align="center">FN_RATE</td>
+        <th align="center">TN</td>
+        <th align="center">TN_RATE</td>
+        <th align="center">Precision</td>
+        <th align="center">Recall</td>
+        <th align="center">F1 Score</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td align="center">{{ test_date_time }}</td>
+        <td align="center">{{ stat.total }}</td>
+        <td align="center">{{ stat.tp }}</td>
+        <td align="center">{{ stat.tp_rate }}</td>
+        <td align="center">{{ stat.fp }}</td>
+        <td align="center">{{ stat.fp_rate }}</td>
+        <td align="center">{{ stat.fn }}</td>
+        <td align="center">{{ stat.fn_rate}}</td>
+        <td align="center">{{ stat.tn }}</td>
+        <td align="center">{{ stat.tn_rate }}</td>
+        <td align="center">{{ stat.precision }}</td>
+        <td align="center">{{ stat.recall }}</td>
+        <td align="center">{{ stat.f1_score }}</td>
+    </tr>
+    </tbody>
+</table>
+<br>
+<table border=1>
+<thead>
+    <tr>
+        <th align="center">Image database path</td>
+        <th align="center">Iris image quality threshold</td>
+        <th align="center">Hamming Dist</td>
+        <th align="center">Exec Path</td>
+    </tr>
+</thead>
+<tbody>
+<tr>
+    <td align="center">{{ config.iris_img_data_path }}</td>
+    <td align="center">{{ config.default_iris_img_quality }}</td>
+    <td align="center">{{ config.default_hamming_dist_threshold }}</td>
+    <td align="center">{{ config.exec_path }}</td>
+</tr>
+</tbody>
+</table>
+<br>
+<table border=1>
+<thead>
+    <tr>
+        <th align="center">#</td><th align="center">Case</td><th align="center">Base</td><th align="center">Target</td><th align="center">Hamming dist</td><th align="center">Expected</td><th align="center">Result</td>
+    </tr>
+</thead>
+<tbody>
+{%- set cnt = namespace(value=0) -%}
+{%- for result in results -%}
+{%- set type = result.type -%}
+{%- set res = result.test_result -%}
+{%- if res == "Fail" -%}
+{%- set cnt.value = cnt.value + 1 -%}
+<tr>
+    <td align="center">
+        <div class="case">{{ cnt.value }}
+    </td>
+    <td align="center">
+        <div class="case">{{ result.case }}
+    </td>
+    {%- if type == "P" -%}
+    <td align="center">
+        <img src="{{ config.iris_img_data_path }}/{{ result.dir }}/{{ result.side }}/{{ result.base_img }}"/><br>
+        <div class="path">{{ config.iris_img_data_path }}/{{ result.dir }}/{{ result.side }}/{{ result.base_img }}</div>
+    </td>
+    <td align="center">
+        <img src="{{ config.iris_img_data_path }}/{{ result.dir }}/{{ result.side }}/{{ result.target_img }}"/>
+        <div class="path">{{ config.iris_img_data_path }}/{{ result.dir }}/{{ result.side }}/{{ result.target_img }}</div>
+    </td>
+
+    {%- elif type == "N-A" -%}
+    <td align="center">
+        <img src="{{ config.iris_img_data_path }}/{{ result.dir }}/{{ result.base_side }}/{{ result.base_img }}"/><br>
+        <div class="path">{{ config.iris_img_data_path }}/{{ result.dir }}/{{ result.base_side }}/{{ result.base_img }}</div>
+    </td>
+    <td align="center">
+        <img src="{{ config.iris_img_data_path }}/{{ result.dir }}/{{ result.target_side }}/{{ result.target_img }}"/>
+        <div class="path">{{ config.iris_img_data_path }}/{{ result.dir }}/{{ result.target_side }}/{{ result.target_img }}</div>
+    </td>
+    {%- endif -%}
+
+    <td align="center">{{ result.hamming_dist }}</td>
+    <td align="center">{{ result.expected_result }}</td>
+    <td class="fail" align="center">{{ result.test_result }}</td>
+</tr>
+{%- endif -%}
+{%- endfor -%}
+</tbody>
+</table>
+</html>

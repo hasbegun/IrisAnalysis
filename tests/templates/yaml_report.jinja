@@ -1,0 +1,48 @@
+config:
+    iris_img_data_path: {{ config.iris_img_data_path }}
+    default_iris_img_quality: {{ config.default_iris_img_quality }}
+    default_hamming_dist_threshold: {{ config.default_hamming_dist_threshold }}
+    exec_path: {{ config.exec_path }}
+
+stat:
+    total: {{ stat.total }}
+    tp: {{ stat.tp }}
+    tp_rate: {{ stat.tp_rate }}
+    fp: {{ stat.fp }}
+    fp_rate: {{ stat.fp_rate }}
+    fn: {{ stat.fn }}
+    fn_rate: {{ stat.fn_rate }}
+    tn: {{ stat.tn }}
+    tn_rate: {{ stat.tn_rate }}
+    precision: {{ stat.precision }}
+    recall: {{ stat.recall }}
+    f1_score: {{ stat.f1_score }}
+
+test_date_time: {{ test_date_time }}
+
+test_results:
+{%- for result in results %}
+{% set type = result.type %}
+{%- if type == "P" -%}
+    {{ result.case|indent(4, True) }}:
+        type: {{ type }}
+        dir: "{{ result.dir }}"
+        side: {{ result.side }}
+        base_img: {{ result.base_img }}
+        target_img: {{ result.target_img }}
+        expected_result: {{ result.expected_result }}
+        test_result: {{ result.test_result }}
+        hamming_dist: {{ result.hamming_dist }}
+{% elif type == "N-A" -%}
+    {{ result.case|indent(4, True) }}:
+        type: {{ type }}
+        dir: "{{ result.dir }}"
+        base_side: {{ result.base_side }}
+        base_img: {{ result.base_img }}
+        target_side: {{ result.target_side }}
+        target_img: {{ result.target_img }}
+        expected_result: {{ result.expected_result }}
+        test_result: {{ result.test_result }}
+        hamming_dist: {{ result.hamming_dist }}
+{%- endif -%}
+{% endfor %}
